@@ -130,3 +130,6 @@ dmypy.json
 
 # fiji output
 output/
+
+# data directory
+data/*
