@@ -7,6 +7,7 @@ from scipy.special import expit
 import arviz as ar
 import sys
 
+
 def create_model_code(priors):
     """
 
@@ -94,12 +95,6 @@ def compute_hdi(idata, param, prob=0.95):
     x = idata.to_dataframe()[('posterior', f'{param}')]
     prob = np.sum((x>=interval[0]) & (x<=interval[1]))/len(x)
     return (interval, prob)
-
-def compute_credible_interval(idata, param):
-    nbins = 1000
-    x = idata.to_dataframe()[('posterior', f'{param}')]
-    fig, axs = fig_setup(1,1)
-    n, bins, patches = axs[0].hist(x, bins=nbins)
 
 def compute_centered_credible_interval(samples, val, step, thresh=0.95):
     prob = 0
