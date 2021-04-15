@@ -6,6 +6,8 @@ from scipy.stats import bernoulli, uniform, norm, beta, gamma
 from scipy.special import expit
 import arviz as ar
 import sys
+from utilities.plotUtils import *
+
 
 
 def create_model_code(priors):
@@ -167,6 +169,7 @@ def centered_credible_interval_plot(ax, ci_df):
 
 def generate_prior(stan_prior):
     size = 1000
+    low, up = 0.0001, 0.9999
     name = stan_prior.split('(')[0]
     param1, param2 = float(stan_prior.split('(')[1].split(',')[0]), float(stan_prior.split('(')[1].split(',')[1][:-1])
     if name=='normal':
@@ -267,3 +270,39 @@ def posterior_plot(idata, param, true_val):
     finalize(axs[0])
     
     return (fig, axs)
+
+
+def bernoulli_confidence_interval(p_hat, n, alpha=0.05):
+    z_val = norm.ppf(1-(alpha/2))
+#     print(z_val)
+    se = np.sqrt(p_hat*(1-p_hat)/n)
+    return [p_hat-z_val*se, p_hat+z_val*se]
+
+def create_ci_plots(df, param, outpath, sort=False):
+    # subset to single parameter
+    ci_df = df[df['param']==param]
+    
+    # sort and reset index dataframe
+    if sort is True:
+        ci_df.sort_values('true', inplace=True) # sort
+    ci_df.reset_index(inplace=True, drop=True) # reset index
+    
+    # compute proportion of CIs capturing true parameter value
+    prop_ci_capturing_true = np.sum((ci_df['true']>=ci_df['lower']) & (ci_df['true']<=ci_df['upper']))/ci_df.shape[0]
+    interval = bernoulli_confidence_interval(prop_ci_capturing_true, ci_df.shape[0])
+#     interval
+    
+    # plot
+    fig, axs = fig_setup(1, 1, w=20)
+    tt=centered_credible_interval_plot(axs[0], ci_df)
+    tt=set_title_axes_labels(axs[0], 
+                        f'{param}\nproportion of CIs capturing true = {prop_ci_capturing_true} ([{interval[0]:.3}, {interval[1]:.3}])',
+                        'iteration',
+                        'CI centered on true'
+                        )
+    plt.tight_layout()
+    tt=axs[0].set_xlim([-1,201])
+    finalize(axs[0])
+    plt.savefig(outpath,
+                dpi=300
+            )
