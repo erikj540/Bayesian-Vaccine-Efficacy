@@ -8,8 +8,6 @@ import arviz as ar
 import sys
 from utilities.plotUtils import *
 
-
-
 def create_model_code(priors):
     """
 
@@ -122,7 +120,7 @@ def compute_upper_credible_interval(samples, step, thresh=0.95):
     ii = 1
     max_val = samples.max()
     while prob<thresh:
-        interval = [val-ii*step, max_val]
+        interval = [max_val-ii*step, max_val]
         prob = compute_probability_of_interval(samples, interval)
         ii += 1
     return (interval, prob)
@@ -130,7 +128,7 @@ def compute_upper_credible_interval(samples, step, thresh=0.95):
 def compute_probability_of_interval(samples, interval):
     samples = samples.sort_values().reset_index(drop=True)
     mask = ((samples>=interval[0]) & (samples<=interval[1]))
-    return np.sum(mask)/len(x)
+    return np.sum(mask)/len(samples)
 
 def hdi_from_models(list_of_models, param):
     ci_df = []
@@ -192,7 +190,9 @@ def generate_prior(stan_prior):
     return prior
 
 # def posterior_plot(model, param):
-def posterior_plot(idata, param, true_val):
+def posterior_plot(idata, param, true_val, prior_name,
+                   mean=False, lower=False, upper=False, 
+                  ):
 
     """
     
@@ -202,18 +202,19 @@ def posterior_plot(idata, param, true_val):
     # true value as vertical line
     # true = model.true_params[param]
     tt=axs[0].axvline(x=true_val, color='k', linestyle='--',
-                label=f"true {param}={true}"
+                label=f"true {param}={true_val}"
                 ) #
 
     # prior
     # idata = ar.from_pystan(model.fit)
     x = idata.to_dataframe()[('posterior', f'{param}')]
-    name = model.priors[param]
-    prior = generate_prior(name)
+    prior = generate_prior(prior_name)
+    if param=='beta1':
+        prior[:,0] = (-1)*prior[:,0]
     tt=axs[0].plot(prior[:,0], prior[:,1], 
                 lw=3, 
                 color='r', 
-                label=f'prior {name}'
+                label=f'prior {prior_name}'
                 )
 
     # posterior samples
@@ -224,12 +225,13 @@ def posterior_plot(idata, param, true_val):
                         label='posterior samples',
     #                      label=f'{param}'
                         )
+    max_count = np.max(n)
 
     # credible intervals
     # HDI
-    interval = compute_hdi(idata, param)
+    interval, prob = compute_hdi(idata, param)
     prob = np.sum((x>=interval[0]) & (x<=interval[1]))/len(x)
-    tt=axs[0].hlines(y=0.1,
+    tt=axs[0].hlines(y=max_count/10,
                     xmin=interval[0], 
                     xmax=interval[1], 
                     lw=2, 
@@ -237,32 +239,35 @@ def posterior_plot(idata, param, true_val):
                     )
 
     # CI equal-tailed around mean
-    # val = x.mean()
-    # interval, prob = compute_centered_credible_interval(x, val, 0.0005)
-    # tt=axs[0].hlines(y=0.2,
-    #                 xmin=interval[0], 
-    #                 xmax=interval[1], 
-    #                 lw=2, 
-    #                 label=f'mean CI ({prob:0.4})'
-    #                 )
+    if mean is True:
+        val = x.mean()
+        interval, prob = compute_centered_credible_interval(x, val, 0.0005)
+        tt=axs[0].hlines(y=max_count/12,
+                        xmin=interval[0], 
+                        xmax=interval[1], 
+                        lw=2, 
+                        label=f'mean CI ({prob:0.4})'
+                        )
 
-    # # lower CI
-    # interval, prob = compute_lower_credible_interval(x, 0.0005)
-    # tt=axs[0].hlines(y=0.3,
-    #                 xmin=interval[0], 
-    #                 xmax=interval[1], 
-    #                 lw=2, 
-    #                 label=f'lower ({prob:0.4})'
-    #                 )
+    # lower CI
+    if lower is True:
+        interval, prob = compute_lower_credible_interval(x, 0.0005)
+        tt=axs[0].hlines(y=max_count/14,
+                        xmin=interval[0], 
+                        xmax=interval[1], 
+                        lw=2, 
+                        label=f'lower ({prob:0.4})'
+                        )
 
-    # # upper CI
-    # interval, prob = compute_upper_credible_interval(x, 0.0005)
-    # tt=axs[0].hlines(y=0.4,
-    #                 xmin=interval[0], 
-    #                 xmax=interval[1], 
-    #                 lw=2, 
-    #                 label=f'upper ({prob:0.4})'
-    #                 )
+    # upper CI
+    if upper is True:
+        interval, prob = compute_upper_credible_interval(x, 0.05)
+        tt=axs[0].hlines(y=max_count/16,
+                        xmin=interval[0], 
+                        xmax=interval[1], 
+                        lw=2, 
+                        label=f'upper ({prob:0.4})'
+                        )
 
 
     tt=axs[0].set_xlim(x.min(), x.max())

@@ -133,3 +133,8 @@ output/
 
 # data directory
 data/*
+
+# figures and jupyter notebooks
+figs/
+notebooks/
+*.ipynb
