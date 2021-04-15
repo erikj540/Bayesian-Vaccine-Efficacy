@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "exp1.py", line 3, in <module>
+    import arviz as ar
+ModuleNotFoundError: No module named 'arviz'

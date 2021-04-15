@@ -272,7 +272,6 @@ def posterior_plot(idata, param, true_val, prior_name,
 
     tt=axs[0].set_xlim(x.min(), x.max())
     tt=set_title_axes_labels(axs[0],None,f'{param}','density')
-    finalize(axs[0])
     
     return (fig, axs)
 
