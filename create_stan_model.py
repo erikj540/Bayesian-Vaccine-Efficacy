@@ -11,7 +11,7 @@ needed_params = ['beta0', 'beta1', 'se', 'sp',
 params = get_command_line_arguments()
 for param in needed_params:
     assert param in params, '{} not in params'.format(param)
-
+print(f'params = {params}')
 priors = params
 model_code = create_model_code(priors)
 model = create_stan_model(model_code)
