@@ -310,3 +310,21 @@ def create_ci_plots(df, param, outpath, sort=False):
     plt.savefig(outpath,
                 dpi=300
             )
+
+def sample_from_prior(stan_prior):
+    name = stan_prior.split('(')[0]
+    if name!='fixed':
+        param1, param2 = float(stan_prior.split('(')[1].split('-')[0]), float(stan_prior.split('(')[1].split('-')[1][:-1])
+    else:
+        sample = float(stan_prior.split('(')[1][:-1])
+
+    if name=='normal':
+        sample = norm.rvs(loc=param1, scale=param2)
+    elif name=='beta':
+        sample = beta.rvs(a=param1, b=param2)
+    elif name=='gamma':
+        sample = gamma.rvs(a=param1, scale=1/param2)
+    elif name=='uniform': 
+        sample = uniform.rvs(a=param1, scale=param2-param1)
+
+    return sample

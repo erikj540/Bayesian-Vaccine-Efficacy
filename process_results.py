@@ -4,12 +4,13 @@ from utilities.utilityFunctions import unpickle_object, pickle_object
 from library import *
 
 # names = ['exp1', 'exp3']
-names = ['exp2']
+# names = ['exp2']
+names = ['exp1']
 
 ##################################
 # EXPERIMENT 1
 if 'exp1' in names:
-    name = 'exp1'
+    name = '2exp1'
     print('Processing experiment 1 data')
     needed_files = [f'./data/{name}/{val}.pkl' for val in np.arange(0,200)]
     files = [f for f in glob.glob(f'./data/{name}/*.pkl') if f.split('/')[-1]!='model.pkl']
@@ -23,10 +24,12 @@ if 'exp1' in names:
         print(f'{len(missing_files)} missing files:\n{missing_files}')
 
     ci_df = []
-    true_params = {'beta0': 0.5, 'beta1': np.log(0.9)}
+    params = ['beta0', 'beta1']
     for f in files:
-        idata = unpickle_object(f)
-        for param in ['beta0', 'beta1']:
+        results = unpickle_object(f)
+        idata = results['idata']
+        true_params = results['true_params']
+        for param in params:
             samples = idata.to_dataframe()[('posterior', f'{param}')]
             mean = samples.mean()
             interval, prob = compute_hdi(idata, param, prob=0.95)

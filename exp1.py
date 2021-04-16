@@ -15,7 +15,6 @@ for f in files: os.remove(f)
 
 
 beta0, beta1, se, sp = 0.5, np.log(0.9), 0.95, 0.95
-true_params = {'beta0': beta0, 'beta1': beta1, 'se': sp, 'sp': se}
 n_burnin, n_samples, n_chains = 1000, 5000, 3
 N = 5000
 n_sims = 200

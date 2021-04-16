@@ -24,7 +24,7 @@ for ii in range(n_sims):
     beta0 = norm.rvs(loc=0, scale=1)
     beta1 = (-1)*gamma.rvs(a=2, scale=1/4)
     se, sp = 0.95, 0.95
-    true_params = {'beta0': beta0, 'beta1': beta1, 'se': sp, 'sp': se}
+    true_params = {'beta0': beta0, 'beta1': beta1, 'se': se, 'sp': sp}
 
     data = create_vax_data(N, 0.5, beta0, beta1, se, sp)
     fit = sample_from_model(model, data, n_burnin, n_samples, n_chains)

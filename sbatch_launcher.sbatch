@@ -13,7 +13,7 @@
 #SBATCH --output=/Users/erjo3868/Bayesian-Vaccine-Efficacy/output/exp3.out
 #SBATCH --error=/Users/erjo3868/Bayesian-Vaccine-Efficacy/output/exp3.err
 
-python ${NAME}.py
+/Users/erjo3868/anaconda3/envs/stan/bin/python ${NAME}.py
 # python exp1.py
 # python exp2.py
 # python exp3.py
