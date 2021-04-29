@@ -1,9 +1,18 @@
 # Bayesian-Vaccine-Efficacy
 
 ## Create Stan model
+
+### Option 1
 The possible Stan priors include `normal(mu,sd)`, `gamma(a,b)`, `beta(a,b)`, `fixed(val)`, etc. The following command compiles a Stan model with the supplied posteriors and path2save.
 
 `python create_stan_model.py --beta0="<prior>" --beta1=="<prior>"  --se=="<prior>"  --sp=="<prior>"  --savepath=="<path>"`
+
+### Option 2
+Save STAN model code in `stan_models` directory as `<name>.stan`. Then run 
+```
+python scripts/compile_stan_model.py --name=<name>
+```
+This will compile the STAN model and save it in the same `stan_models` directory as `<name>.pkl`.
 
 ## Sampling from Stan model
 Most often running/sampling from a Stan model involves three steps/commands: (1) load the model, (2) create/supply data, (3) posterior sampling via MCMC.

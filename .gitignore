@@ -138,3 +138,6 @@ data/*
 figs/
 notebooks/
 *.ipynb
+
+# ignore compiled STAN models
+stan_models/*.pkl

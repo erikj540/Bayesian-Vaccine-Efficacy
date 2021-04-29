@@ -51,24 +51,29 @@ def sample_from_model(model, data, n_burnin, n_samples, n_chains):
     fit = model.sampling(data=data, iter=n_samples+n_burnin, chains=n_chains, warmup=n_burnin)
     return fit
 
-def create_vax_data(N, vax_prob, beta0, beta1, se, sp, seed=None):
-    if seed is not None:
-        np.random.seed(seed)
-    x1 = bernoulli.rvs(vax_prob, size=N) # vaccinated (1)/unvaccinated (0)
-    X = pd.DataFrame({
-        'vax': x1,
-        })
-    beta_vec = np.array([beta0, beta1])
-    X['prob_TD'] = X.apply(lambda row: expit(np.dot(np.array([1, row['vax']]), beta_vec)), axis=1)
-    X['test_TD'] = X['prob_TD'].apply(lambda x: bernoulli.rvs(se*x + (1-sp)*(1-x)))
-    y = X['test_TD']
+class StudyData:
+    def __init__(self, vax_prob, beta0, beta1):
+        self.vax_prob = vax_prob
+        self.beta0 = beta0
+        self.beta1 = beta1
 
-    data = dict(
-        x1=x1,
-        y=y,
-        N=N
-    )
-    return data
+    def create_one_test_data(self, N, se, sp, test_id):
+        x1 = bernoulli.rvs(self.vax_prob, size=N) # vaccinated (1)/unvaccinated (0)
+        X = pd.DataFrame({'vax': x1,})
+        beta_vec = np.array([self.beta0, self.beta1])
+        X['prob_td'] = X.apply(lambda row: expit(np.dot(np.array([1, row['vax']]), beta_vec)), axis=1)
+        X['test_id'] = test_id
+        X['test_result'] = -1
+        X['test_result'] = X['prob_td'].apply(lambda p: bernoulli.rvs(se*p + (1-sp)*(1-p)))
+
+        data = {
+            f'N': N, 
+            f'se': se,
+            f'sp': sp, 
+            f'X': X
+        }
+
+        return data
 
 def plot_centered_error_bars(ax, x, y, true_y, lower, upper, label=None):
     ax.errorbar(x, y-true_y, yerr=(y-lower, upper-y), fmt='o', label=label) # error is (lower, upper) = (mean-lower, upper-mean)

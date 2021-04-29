@@ -2,8 +2,8 @@ import numpy as np
 import os
 
 # names = ['exp1', 'exp2']
-names = ['exp4']
-# names = ['exp3']
+# names = ['exp4']
+names = ['exp3', 'exp4']
 
 
 ###########################################
