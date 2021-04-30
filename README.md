@@ -1,5 +1,4 @@
 # Bayesian-Vaccine-Efficacy
-
 ## Create Stan model
 
 ### Option 1
@@ -66,6 +65,14 @@ Consistency for unknown beta0, beta1, se, and sp, i.e., they come from their pri
 `NAME="exp4" && python create_stan_model.py --beta0='normal(0,1)' --beta1='gamma(2,4)' --se='beta(10,2)' --sp='beta(10,2)' --savepath='/Users/erjo3868/Bayesian-Vaccine-Efficacy/data/${NAME}/model.pkl'`
 
 `NAME="exp4" && DIR="/Users/erjo3868/Bayesian-Vaccine-Efficacy/output/" && sbatch --job-name=${NAME} --output=${DIR}${NAME}.out --error=${DIR}${NAME}.err --export=NAME=${NAME} sbatch_launcher.sbatch`
+
+
+## Processing the MCMC sampling data
+- **Credible intervals**: *ALL* return a 2-tuple, `interval`, with the CI bounds (`interval=[<lower>, <upper>]`) and the proportion, `prop`, of samples that are contained in the interval. If you don't supply the `prob` in the CI functions, the default is 0.95. To get the `samples` argument for the non-HDI CIs from `idata` and `param`, do `samples = idata.to_dataframe()[("posterior", f"{param}")]`
+    - HDI: `compute_hdi(idata, param, prob=0.95)`
+    - Centered CI: `compute_centered_credible_interval(samples, val, step, prob=0.95)`
+    - Upper CI: `compute_upper_credible_interval(samples, step, prob=0.95)`
+    - Lower CI: `compute_lower_credible_interval(samples, step, prob=0.95)`  
 
 ## Next steps
 - (4/14) 

@@ -1,0 +1,44 @@
+\begin{thebibliography}{1}
+
+\bibitem{endo2020bias}
+{\sc A.~Endo, S.~Funk, and A.~J. Kucharski}, {\em Bias correction methods for
+  test-negative designs in the presence of misclassification}, Epidemiology \&
+  Infection, 148 (2020).
+
+\bibitem{flor2020comparison}
+{\sc M.~Flor, M.~Weiss, T.~Selhorst, C.~Muller-Graf, and M.~Greiner}, {\em
+  Comparison of bayesian and frequentist methods for prevalence estimation
+  under misclassification}, BMC public health, 20 (2020), pp.~1--10.
+
+\bibitem{fukushima2017basic}
+{\sc W.~Fukushima and Y.~Hirota}, {\em Basic principles of test-negative design
+  in evaluating influenza vaccine effectiveness}, Vaccine, 35 (2017),
+  pp.~4796--4800.
+
+\bibitem{gelman2020bayesian}
+{\sc A.~Gelman and B.~Carpenter}, {\em Bayesian analysis of tests with unknown
+  specificity and sensitivity}, Journal of the Royal Statistical Society:
+  Series C (Applied Statistics), 69 (2020), pp.~1269--1283.
+
+\bibitem{greenland2006bayesian}
+{\sc S.~Greenland}, {\em Bayesian perspectives for epidemiological research: I.
+  foundations and basic methods}, International journal of epidemiology, 35
+  (2006), pp.~765--775.
+
+\bibitem{jackson2021differences}
+{\sc M.~L. Jackson, J.~Ferdinands, M.~P. Nowalk, R.~K. Zimmerman, B.~Kieke,
+  M.~Gaglani, K.~Murthy, J.~G. Petrie, E.~T. Martin, J.~R. Chung, et~al.}, {\em
+  Differences between frequentist and bayesian inference in routine
+  surveillance for influenza vaccine effectiveness: a test-negative
+  case-control study}, BMC public health, 21 (2021), pp.~1--8.
+
+\bibitem{larremore2020jointly}
+{\sc D.~B. Larremore, B.~K. Fosdick, S.~Zhang, and Y.~H. Grad}, {\em Jointly
+  modeling prevalence, sensitivity and specificity for optimal sample
+  allocation}, bioRxiv,  (2020).
+
+\bibitem{lipsitch2020understanding}
+{\sc M.~Lipsitch and N.~E. Dean}, {\em Understanding covid-19 vaccine
+  efficacy}, Science, 370 (2020), pp.~763--765.
+
+\end{thebibliography}

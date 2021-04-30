@@ -6,7 +6,7 @@ from utilities.utilityFunctions import unpickle_object, pickle_object
 from BayesianVE.library import *
 import os
 
-NAME = 'covid_medium_prev'
+NAME = 'flu_low_prev'
 DATA_DIR = '/Users/erjo3868/Bayesian-Vaccine-Efficacy/data'
 MODEL_DIR = '/Users/erjo3868/Bayesian-Vaccine-Efficacy/stan_models'
 TEST = 0 # 1=test, 0=not test
@@ -19,13 +19,13 @@ else: # not testing
     N_0, N_1 = 5000, 5000
     n_burnin, n_samples, n_chains = 1000, 3000, 3
 
-prev = 0.5
-alpha = 0.1
+prev = 0.3
+alpha = 0.5
 ve = 1-alpha
-se_0 = 0.99
-sp_0 = 0.99
-se_1 = 0.89
-sp_1 = 0.99
+se_0 = 0.50
+sp_0 = 0.90
+se_1 = 0.70
+sp_1 = 0.95
 beta0, beta1 = logit(prev), np.log(alpha)
 vax_prop = 0.5
 

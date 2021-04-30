@@ -1,0 +1,141 @@
+% \NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{macros}[2019/08/23 v1]
+
+% \RequirePackage[total={7.0in,9.5in}, top=1.0in, includefoot]{geometry}
+\RequirePackage{amsmath}
+\RequirePackage{amssymb}
+\RequirePackage{amsthm}
+\RequirePackage{amsfonts}
+\RequirePackage{epsfig}
+\RequirePackage{graphicx} % Include figure files
+\RequirePackage{setspace}
+\RequirePackage{subfigure}
+\RequirePackage{times}
+\RequirePackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\RequirePackage{hyperref}
+\RequirePackage{array}
+\RequirePackage{blkarray}
+\RequirePackage{booktabs}
+\RequirePackage{calc}
+\RequirePackage{enumerate}
+\RequirePackage{enumitem}
+\RequirePackage{float}
+\RequirePackage{fourier}
+\RequirePackage{import}
+\RequirePackage{ifthen}
+\RequirePackage{listings}
+\RequirePackage{longtable}
+\RequirePackage{mathtools}
+\RequirePackage{multicol}
+\RequirePackage{multirow}
+\RequirePackage{mathrsfs}
+\RequirePackage{pdfpages}
+\RequirePackage{subfiles}
+\RequirePackage{subfigure}
+\RequirePackage{tikz}
+\RequirePackage{ulem}
+
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[T1]{fontenc}
+\RequirePackage[english]{babel}
+\RequirePackage[toc]{glossaries}
+\RequirePackage{blindtext}
+\RequirePackage{fancyhdr}
+
+% % % Hyperlink properties
+% % \RequirePackage{hyperref}
+% % \hypersetup{
+% %     colorlinks=true,
+% %     linkcolor=blue,
+% %     filecolor=magenta,
+% %     urlcolor=cyan
+% % }
+% % \urlstyle{same}
+
+% % ----------------------------------------------------------
+% % NEW COMMANDS
+% % -- Miscellaneous shortened commands --
+\def \d {\dot}
+\def \dd {\ddot}
+\def \h {\hat}
+\def \p {\partial}
+\def \f {\frac}
+\newcommand{\mat}[1]{\begin{pmatrix} #1 \end{pmatrix}}
+\def \mb {\mathbb}
+\def \mc {\mathcal}
+\def \l {\left}
+\def \r {\right}
+\def \t {\text}
+\def \la{\langle}
+\def \ra{\rangle}
+\def \lv{\left\lVert}
+\def \rv{\right\Vert}
+\newcommand{\abs}[1]{\left| #1 \right|}
+\newcommand{\set}[1]{\l\{#1\r\}}
+\newcommand{\pf}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\ppf}[2]{\frac{\partial^2 #1}{\partial #2^2}}
+\newcommand{\ub}[1]{\textbf{\underline{#1}}}
+\newcommand{\ul}[1]{\underline{#1}}
+\newcommand{\ol}[1]{\overline{#1}}
+\newcommand{\tx}[1]{\text{#1}}
+\newcommand{\tb}[1]{\textbf{#1}}
+\newcommand{\ti}[1]{\textit{#1}}
+\newcommand{\defeq}{\stackrel{\text{\tiny def}}{=}}
+\newcommand{\der}[1]{\frac{d}{d #1}} %(d1 BY d2)
+\newcommand{\nder}[2]{\frac{d^{#1}}{d #2^{#1}}} %(d by d1 OF 2)
+\newcommand{\noi}{\noindent}
+\newcommand{\vs}[1]{\vspace{#1 cm}}
+\newcommand{\hs}[1]{\ul{\hspace{#1 cm}}}
+
+\newcommand{\sumk}[2]{\sum_{k=#1}^{#2}}
+\newcommand{\sumn}[2]{\sum_{n=#1}^{#2}}
+
+
+% % -- Greek letters --
+\def \O {\Omega}
+\def \lb {\lambda}
+\def \sg {\sigma}
+\def \e{\epsilon}
+\def \o {\omega}
+\def \G {\Gamma}
+\def \g {\gamma}
+\def \a{\alpha}
+\def \b{\beta}
+\def \de{\delta}
+\def \th{\theta}
+\def \vp {\varphi}
+
+
+% % -- Common math symbols --
+\def \s {\subset}
+\def \w {\wedge}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\def \C{\mb{C}}
+\def \N{\mb{N}}
+\def \Q{\mb{Q}}
+\def \i{\infty}
+\def \ss{\subset}
+\def \sse{\subseteq}
+\def \fa{\forall}
+\def \ex{\exists}
+
+
+% % -- Probability --
+\def \P{\mb{P}}
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\Cor}{\mathrm{Cor}}
+
+% -- Analysis --
+% \newcommand{\abs}[1]{\left| #1 \right|}
+\newcommand{\limn}{\lim_{n\to\infty}}
+\newcommand{\norm}[1]{{\left\lVert{#1}\right\rVert}}
+\newcommand{\unorm}[1]{\left\| #1 \right\|_u}
+\newcommand{\ip}[1]{\left\langle #1 \right\rangle}
+\newcommand{\HH}{\mathcal{H}} 
+\newcommand{\spn}[1]{\tx{span}\l( #1 \r)}
+\newcommand{\wh}[1]{\widehat{#1}}
+\newcommand{\T}{\mathbb{T}}
+\newcommand{\ran}{\text{ran}}

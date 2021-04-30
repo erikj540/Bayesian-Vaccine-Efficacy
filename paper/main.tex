@@ -1,0 +1,256 @@
+%%%%%%%%%% Document Class
+% \documentclass[10pt,twocolumn,superscriptaddress,notitlepage]{revtex4-1}
+\documentclass[11pt,notitlepage,twoside]{article}
+
+%%%%%%%%%% Imports and packages
+\usepackage{mymacros} % requires mymacros.sty
+\usepackage{bookmark}
+\usepackage[total={6.5in,9in}, top=1.0in, includefoot]{geometry}
+\usepackage{lineno}
+\linenumbers
+
+% Set path to where graphics may be
+\graphicspath{
+  {"./images/"}
+  {"../images/"}
+  {"../../images/"}
+}
+
+% Code for comments
+\newcommand{\ej}[1]{\textcolor{blue}{#1}}
+
+
+
+
+%%%%%%%%%% 
+% New commands
+%%%%%%%%%%
+
+%%%%%%%%%% 
+% Main document
+\begin{document}
+%%%%%%%%%% Authors
+% For use with revtex4-1
+% \author{\ej{Erik K. Johnson}}
+% \email{erik.k.johnson@colorado.edu}
+% \affiliation{Department of Applied Mathematics, University of Colorado at Boulder}
+
+
+%%%%%%%%%% Title and authors
+\title{Title}
+\author{Erik Johnson}
+
+
+%%%%%%%%%% Abstract
+% \begin{abstract}
+% \end{abstract}
+\maketitle
+
+
+%%%%%%%%%% Content
+%%%    
+%%%   
+%%%%%%%
+%%%%%
+%%%
+%
+\tableofcontents
+
+\section{Outline}
+\begin{itemize}
+\item Motivation
+\item Previous work
+\item Methods/Model
+\item Results
+\item Discussion
+\item Notation
+\end{itemize}
+
+
+\subsection{Motivation}
+\ej{Estimating vaccine efficacy}
+
+\subsection{Previous work}
+Test-negative designs are widely used for assessing vaccine effectiveness \cite{fukushima2017basic,lipsitch2020understanding}. In the frequentist paradigm, Endo et al.~\cite{endo2020bias} present a bias-correction method for TNDs that accounts for imperfect sensitivity and specificity along with other potential confounders (e.g., age and sex). However, their method assumes prevalences are known and that sensitivity and specificity are known. Often, in reality, disease prevalence and test sensitivity and specifity are not known and, indeed, are themselves estimated from data. Include importance of incorporating uncertainty in test sensitivity and specificty via GelmanCarpenter case study. 
+
+Jackson et al.~\cite{jackson2021differences} compare a frequentist approach and a Bayesian approach to estimating vaccine efficacy for TNDs \ej{and show...}. However, they do not account for an imperfect test which, \ej{as can be seen here ... is important to do}. Conversly, Flor et al.~\cite{flor2020comparison} compare frequentist and Bayesian approaches for prevalence estimation with an imperfect test \ej{they don't use a logistic regression framework and don't address vaccine efficacy}.
+
+The sensitivity and specicity of a diagnostic are inferred from a finite number of validation tests. As a consequence, sensitivity and specificity themselves carry uncertainty, which affects the statistical interpretation of prevalence surveys in the field. Studies that use only point estimates of test characteristics can dramatically underestimate uncertainty around prevalence 
+
+Although the joint posterior distribution does lend itself to analytic computations (e.g., calculating expectations and variances), it is easily sampled from using a Markov chain Monte Carlo (MCMC) algorithm. Samples from the posterior can then be used to estimate any summary statistic of interest, for instance, point estimates (e.g., posterior means and modes) and credible intervals for the parameters. 
+
+Here we address the problem of inferring vaccine efficacy from a TND with an imperfect test, where the test’s imperfections may not be known. Our framework can easily be extended to integrate data from multiple TNDs each potential using a different diagnostic test or to single TNDs in which different diagnostic tests are used. \ej{Include statement about Bayesian framework propogating uncertainty. Plus statement about inferring vaccine efficacy given data and, conversely, designing studies given desired uncertainty in inferred vaccine efficacy}. 
+
+\section{Methods/Model}
+In this section, we briefly review how TNDs work and then discuss how logistic regression is used to model VE. VE is one minus an odds ratio so logistic regression is natural model for VE as it directly models the odds in a multivariate framework that can account for potentially confounding variables.
+
+
+\ej{TNDs and how VE is estimated in them}
+In TNDs, the study subjects are patients who show up to a medical clinic with COVID-like symptoms. Those that test positive are considered test positive cases while those that test negative are considered test negative controls. Then, looking at who among the cases and controls is vaccinated and unvaccinated, vaccine efficacy is estimated by one minus the relative risk of COVID in the vaccinated population relative to the unvaccinated population, i.e., one minus the odds ratio
+\[ VE = 1 - \tx{OR} \]
+
+Since VE can depend on patient characteristics (e.g., age, sex), we define a vector of covariates for each patient. Notationally, we let $x_i = (x_i^1, x_i^2, \ldots, x_i^m)$ be patient $i$'s vector of covariates. The first entry of $x^i$ is the patient's vaccination status. That is,
+\begin{equation}
+x_i^1 = \begin{cases}
+  0, & \text{unvaccinated} \\ 1, & \text{vaccinated} 
+\end{cases}
+\end{equation}
+
+Lastly, since we will be modeling the odds a patient has COVID, let $p(x_i)$ be the probability that patient $i$ has COVID (i.e., is disease positive). In this framework vaccine efficacy is stratified by study covariates $x$ (i.e., it is a function of $x$) and is given by 
+% one minus the odds ratio of a vaccinated person having COVID versus an unvaccinated person:
+\begin{equation}\label{eq:tndve}
+  VE(x) = 1 - \tx{OR} = 1 - \frac{\l[ \f{p(x \mid x_1=1)}{1-p(x \mid x_1=1)} \r]}{ \l[ \f{p(x \mid x_1=0)}{1-p(x \mid x_1=0)} \r]} 
+\end{equation}
+
+In logistic regression, we model $p(x)$'s dependence on the covariates $x$ via the so-called logit function
+\begin{equation}\label{eq:logodds}
+\tx{logit}(p(x)) = \log\l( \f{p(x)}{1-p(x)} \r) = \b_0 + \b_1 x_1 + \b_2 x_2 + \ldots + \b_m x_m 
+\end{equation}
+% which implies
+% \begin{equation}\label{eq:inverselogit}
+  % p(x) = \f{1}{1 + e^{-(\b_0 + \b_1 x_1 + \b_2 x_2 + \ldots + \b_m x_m )}}
+% \end{equation}
+
+In TND studies, the data consists of each patient's covariates $x_i$ as well as their test result $y_i$, where $y_i = 1$ if the patient tested positive and $y_i = 0$ if the patient tested negative. For a test with sensitivity $\tx{se}$ and specificity $\tx{sp}$, $y_i$ is a realization of a Bernoulli trial
+\begin{equation}\label{eq:testBern}
+y_i \sim \tx{Bernoulli}\l(\tx{se} \cdot p(x_i) + (1 - \tx{sp}) \cdot (1 - p(x_i)) \r)
+\end{equation}
+The two summed terms in Equation~\eqref{eq:testBern} correspond to the two ways someone can test positive: they can be a true positive or a false positive. 
+
+Endo et al.~\cite{endo2020bias} use the same setup and show, in the frequentist paradigm, how the odds ratio estimate $\widehat{\tx{OR}}$ (recall: $VE = 1 - \tx{OR}$) can be adjusted for an imperfect test. However, their adjustment assumes that not only the sensitivity and specificity of the test are known but also the prevalences of COVID and of similar but non-COVID diseases are known in the unvaccinated population. In practice, all four of those parameters are estimated from data and, thus, have some degree of uncertainty. When that uncertainty is not taken into account, parameter estimates err~\cite{larremore2020jointly,endo2020bias,gelman2020bayesian}. 
+
+To account for parameter uncertainty, we use a Bayesian model. First, for simplicity, suppose that we have priors for sensitivity, specificity, and $\b_0, \b_1, \ldots, \b_m$. Including these priors, the model is
+\begin{align}
+y_i &\sim \tx{Bernoulli}\l(\tx{se} \cdot p(x_i) + (1 - \tx{sp}) \cdot (1 - p(x_i)) \r)
+% , \qquad i=1,2,\ldots,N 
+\\
+\tx{where} \quad p(x_i) &= \tx{logit}^{-1}\l( \b_0 + \b_1 x^1_i + \b_2 x^2_i + \ldots + \b_m x^m_i \r) = \frac{1}{1 + e^{-(\b_0 + \b_1 x^1_i + \b_2 x^2_i + \ldots + \b_m x^m_i)}}
+% , \qquad i=1,2,\ldots,N
+\end{align}
+for $i=1,2,\ldots,N$.
+
+\ej{In what follows we consider covariates...}
+
+\subsection{Choice of priors} 
+
+Unfortunately, in practice, there is generally no Good Book in which we can look up appropriate priors for the parameters $\tx{se}, \tx{sp} \b_0, \b_1, \ldots,$ and $\b_m$. In the absence of prior knowledge about the parameters, noninformative priors should be used to reflect this uncertainty. The need for "subjective" priors is sometimes portrayed as a drawback of Bayesian analysis but, in reality, "the Bayesian approach makes explicit [the] subjective and arbitrary elements shared by all statistical inferences"~\cite{greenland2006bayesian}.
+
+While noninformative priors should be used when little is known about the values a parameter can take, often something is known about the parameters. Whether obtained from previous trials or studies, knowledge of related diseases, or by some other means, informative priors can be used or a hierarchical model can be used to incorporate other data sources (e.g., test validation studies) as is done in Gelman and Carpenter~\cite{gelman2020bayesian}.
+
+\ej{For the covariates ..., we chose to use priors}
+
+\subsection{Interpretation of the $\b$s}
+\subsubsection{$\b_0$}
+For the unvaccinated subpopulation with covariates $x$ (unvaccinated means $x_1=0$), 
+\begin{equation}
+\f{p(x)}{1-p(x)} = \b_0
+\end{equation}
+\subsubsection{$\b_1$}
+Exponentiating Equation \ref{eq:logodds} and plugging the resulting expression for the odds into Equation~\ref{eq:tndve} gives
+\begin{equation}
+  VE(x) = 1 - e^{\b_1} \implies \b_1 = \log(1-VE(x))
+  % = \f{e^{\b_0 + \b_1 + \b_2 x_2 + \ldots + \b_m x_m}}{e^{\b_0 + \b_2 x_2 + \ldots + \b_m x_m}}
+\end{equation}
+Thus, $\b_1$ directly corresponds to vaccine efficacy.
+
+\ej{What is VE}
+Vaccine efficacy measures the reduction in infection for the vaccinated versus the unvaccinated. 
+
+\section{Results}
+\subsection{Consistency}
+
+\subsection{If you run a TND and don't account for imperfect sensitivity and specificity you get the wrong VE}
+
+\subsection{If you know se and sp, we show how to get VE posterior in the logistic regression framework with covariates (Jackson and Endo)}
+
+\subsection{If you don’t know se and sp, we show how to get VE posterior and posteriors on se and sp and prevalence}
+
+\subsection{More important to nail down specificity}
+
+\subsection{Study design, sample size calculation given priors}
+
+\subsection{Importance of nailing down se and sp}
+
+\section{Ideas}
+\begin{itemize}
+\item Talk about things in "forward" (given priors, what is VE) and "reverse/backward" direction (given desired VE range, how certain do we need to be about the priors)
+\item 
+\end{itemize}
+
+\section{Quotes}
+\subsection{Bayesian}
+\begin{itemize}
+\item "frequentist statistical
+methods, wherein event probabilities are treated as expected frequencies were the study to be repeated many times in some hypothetical population... Bayesian statistical paradigm, in which probabilities are considered to be beliefs about the likelihood of an outcome, provides a framework by which information from prior VE studies can be explicitly incorporated into VE estimates" (Jackson)
+\item "Posterior values were estimated using Gibbs sampling with 1000 burn-in iterations and 10,000 sampling iterations [15, 16]. We assessed  convergence of the Markov chains by confirming stationarity of trace plots and lack of auto-correlation between sampled values" (Jackson)
+\item "Bayesian inference is a natural way to propagate these uncertainties, with hierarchical modeling capturing variation in these parameters across experiments. Another concern is the people in the sample not being representative of the general population. Statistical adjustment cannot without strong assumptions correct for selection bias in an opt-in sample, but multilevel regression and poststratication can at least adjust for known differences between the sample and the population" (G\&C)
+\item 
+\end{itemize}
+
+\subsection{Sensitivity and Specificity}
+\begin{itemize}
+\item 
+\end{itemize}
+
+\subsection{Estimating... - Larremore, Fosdick (2021)}
+This is particularly important given inadequate viral diagnostic testing and incomplete understanding of the rates of mild and asymptomatic infections (Sutton et al., 2020). In this context, serological surveillance has the potential to provide information about the true number of infections, allowing for robust estimates of case and infection fatality rates (Fontanet et al., 2020) and for the parameterization of epidemiological models to evaluate the pos- sible impacts of specific interventions and thus guide public health decision-making.
+
+Three sources of uncertainty complicate efforts to learn population seroprevalence from subsampling. First, tests may have imperfect sensitivity and specificity, and studies that do not adjust for test imperfections will produce biased seroprevalence estimates. Complicating this issue is the fact that sensitivity and specificity are, themselves, estimated from data (Larremore and Fosdick, 2020; Gelman and Carpenter, 2020), which can lead to statistical confusion if uncertainty is not correctly propagated (Bendavid et al., 2020). Second, the population sampled will likely not be a representa- tive random sample (Bendavid et al., 2020), especially in the first rounds of testing, when there is urgency to test using convenience samples and potentially limited serological testing capacity. Third, there is uncertainty inherent to any model-based forecast that uses the empirical estimation of sero- prevalence, regardless of the quality of the test, in part because of the uncertain relationship between seropositivity and immunity (Tan et al., 2020; Ward et al., 2020).
+
+\subsection{Bayesian... - Gelman, Carpenter (2020)}
+\begin{itemize}
+\item As a result, the substantive conclusion from that earlier report has been overturned. From the given data, the uncertainty in the specificity is large enough that the data do not supply strong evidence of a substantial prevalence
+\item We fit the above hierarchical model to the data from Bendavid et al. (2020b), assigning a uniform prior to $\pi$ and weak $normal+(0,1)$ priors to $\sigma_\gamma$, $\sigma_\delta$ (using the notation normal+ for the truncated normal distribution constrained to be positive). We often use half-normal or half-t priors for variance parameters when we want to constrain them at the high end but allow them to be arbitrarily close to zero if the data support such inferences (Gelman, 2006). Setting the scale of these half-normals to 1 makes the prior weak for this particular application, in the following sense. A shift of 1 on the logit scale represents a pretty big change in sensitivity or specificity. For example, $logit(0.8) = 1.4$, so if 0.8 is a typical value of sensitivity, and if $\sigma_\delta = 1$, then we would expect sensitivities to vary by roughly $\pm$1 standard deviation, or 0.4 to 2.4 on the logit scale, which corresponds to a probability range from 0.60 to 0.92. The $normal+(0,1)$ hyperpriors weakly pull the specificities and sensitivities from different studies toward each other, while allowing for a large variation if required by the data.
+% \item Instead of specifying $\sigma_\delta$, we give it an informative prior distribution. In particular, we replace the weakly informative $normal+(0,1)$ priors on $\sigma_\gamma$, $\sigma_\delta$ with something stronger, $\sigma_\gamma, \sigma_\delta \sim normal+(0,0.3)$. To get a sense of what this means, start with the point estimate from Figure 2a of $\mu_\delta$, which is 1.58. If $\sigma_\delta$ were 0.3, then there would be a roughly 2/3 chance that the sensitivity of in a new experiment is in the range $logit−1(1.58 ± 0.3)$, which is (0.78, 0.87). This seems reasonable.
+
+\end{itemize}
+
+
+\section{Notation}
+\begin{itemize}
+\item \ub{PPV}: $p(D+ \mid T+)$
+\item \ub{coverage}: proportion of the time interval contains the true value of interest
+\end{itemize}
+%
+%%%
+%%%%%
+%%%%%%%
+%%%
+%%%
+
+\bibliographystyle{siam}	% or "siam", or "alpha", or "alpha" or "apalike"
+% \nocite{*}		% list all refs in database, cited or not
+% \bibliography{refs}		% Bib database in "refs.bib"
+\bibliography{bibliography}
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% HELPER STUFF (COMMONLY USED)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% % Graphics
+% \begin{figure}
+%   % \caption{} % caption above figure
+%   \centering
+%     \includegraphics[scale=0.3]{DBLa_rank_uniq_kmers.png}
+%     \caption{} % caption below figure
+% \end{figure}
+% Include PDF
+% \includepdf[scale=1, pages={1}]{}
+
+% % Code
+% \begin{lstlisting}[language=Python, frame=single] <code> \end{lstlisting}
+% \lstinputlisting[language=Python, firstline=<#>, lastline=<#>, frame=single]{<file_name>.py}
+
+% % Math
+% % Align with explanations to the side
+% \begin{align*}
+% 2 + 2 &= 4 \\
+% &=3.99999999\ldots \hspace{3cm} && \tx{(blah)} \\
+% &=8/2 && \tx{(blah)}
+% \end{align*} 
+
+% % Itemize and list
+% \begin{enumerate}[label=(\alph*)]
+% \item 
+% \end{enumerate}

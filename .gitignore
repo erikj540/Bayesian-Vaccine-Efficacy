@@ -141,3 +141,5 @@ notebooks/
 
 # ignore compiled STAN models
 stan_models/*.pkl
+
+*.DS_STORE

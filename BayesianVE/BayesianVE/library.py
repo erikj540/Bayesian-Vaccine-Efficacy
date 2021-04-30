@@ -98,37 +98,40 @@ def compute_hdi(idata, param, prob=0.95):
     interval = [hdi[param][0], hdi[param][1]]
     
     x = idata.to_dataframe()[('posterior', f'{param}')]
-    prob = np.sum((x>=interval[0]) & (x<=interval[1]))/len(x)
-    return (interval, prob)
+    prop = np.sum((x>=interval[0]) & (x<=interval[1]))/len(x)
+    return (interval, prop)
 
-def compute_centered_credible_interval(samples, val, step, thresh=0.95):
-    prob = 0
+def compute_centered_credible_interval(samples, val, step, prob=0.95):
+    """
+    Computes X% credible interval where the credible interval is centered on user supplied value. 
+    """
+    prop = 0
     ii = 1
-    while prob<thresh:
+    while prop<prob:
         interval = [val-ii*step, val+ii*step]
-        prob = compute_probability_of_interval(samples, interval)
+        prop = compute_probability_of_interval(samples, interval)
         ii += 1
-    return (interval, prob)
+    return (interval, prop)
 
-def compute_lower_credible_interval(samples, step, thresh=0.95):
-    prob = 0
+def compute_lower_credible_interval(samples, step, prob=0.95):
+    prop = 0
     ii = 1
     min_val = samples.min()
-    while prob<thresh:
+    while prop<prob:
         interval = [min_val, val+ii*step]
-        prob = compute_probability_of_interval(samples, interval)
+        prop = compute_probability_of_interval(samples, interval)
         ii += 1
-    return (interval, prob)
+    return (interval, prop)
 
-def compute_upper_credible_interval(samples, step, thresh=0.95):
-    prob = 0
+def compute_upper_credible_interval(samples, step, prob=0.95):
+    prop = 0
     ii = 1
     max_val = samples.max()
-    while prob<thresh:
+    while prop<prob:
         interval = [max_val-ii*step, max_val]
-        prob = compute_probability_of_interval(samples, interval)
+        prop = compute_probability_of_interval(samples, interval)
         ii += 1
-    return (interval, prob)
+    return (interval, prop)
 
 def compute_probability_of_interval(samples, interval):
     samples = samples.sort_values().reset_index(drop=True)
@@ -194,6 +197,7 @@ def generate_prior(stan_prior):
     
     return prior
 
+
 # def posterior_plot(model, param):
 def posterior_plot(idata, param, true_val, prior_name,
                    mean=False, lower=False, upper=False, 
@@ -211,8 +215,6 @@ def posterior_plot(idata, param, true_val, prior_name,
                 ) #
 
     # prior
-    # idata = ar.from_pystan(model.fit)
-    x = idata.to_dataframe()[('posterior', f'{param}')]
     prior = generate_prior(prior_name)
     if param=='beta1':
         prior[:,0] = (-1)*prior[:,0]
@@ -224,6 +226,7 @@ def posterior_plot(idata, param, true_val, prior_name,
 
     # posterior samples
     nbins = 100
+    x = idata.to_dataframe()[('posterior', f'{param}')]
     n, bins, patches =axs[0].hist(x,
                         bins=nbins,
                         density=True,
@@ -250,7 +253,7 @@ def posterior_plot(idata, param, true_val, prior_name,
         tt=axs[0].hlines(y=max_count/12,
                         xmin=interval[0], 
                         xmax=interval[1], 
-                        lw=2, 
+                        lw=2,
                         label=f'mean CI ({prob:0.4})'
                         )
 
@@ -333,3 +336,73 @@ def sample_from_prior(stan_prior):
         sample = uniform.rvs(a=param1, scale=param2-param1)
 
     return sample
+
+class MCMCSamples:
+    """This class is for plotting and analyzing the results of MCMC samples"""
+    def __init__(self, data, mcmc_samples, true_param_vals):
+        """ 
+        Params:
+            - data (DataFrame) : has to have 'test_result' and 'vax' column. vax=0 (1) should be unvaccinated (vaccinated) and test_result=0 (1) should be test negative (positive)
+            - mcmc_samples : output of arviz.from_pystan
+            - true_param_vals : dict containing true param values
+        """
+        self.data = data
+        self.mcmc_samples = mcmc_samples
+        self.true_param_vals = true_param_vals
+
+        tmp = self.data.groupby(['vax', 'test_result'])['test_result'].count()
+        self.num_unvax_testNeg = tmp[0][0]
+        self.num_unvax_testPos = tmp[0][1]
+        self.num_vax_testNeg = tmp[1][0]
+        self.num_vax_testPos = tmp[1][1]
+    
+    def compute_naive_odds_ratio(self):
+        """
+        Compute naive odds ratio which is (n_vp / n_vn) / (n_up / n_un)
+        """
+        vax_odds = self.num_vax_testPos/self.num_vax_testNeg
+        unvax_odds = self.num_unvax_testPos/self.num_unvax_testNeg
+
+        # return vax_odds/unvax_odds
+        self.naive_odds_ratio = vax_odds/unvax_odds
+    
+    def compute_corrected_odds_ratio(self):
+        """
+        Compute corrected odds ratio ala Endo et al. equation 3 and Marc's derivation.
+        """
+        nu = self.num_unvax_testNeg + self.num_unvax_testPos
+        nv = self.num_vax_testNeg + self.num_vax_testPos
+        se, sp = self.true_param_vals['se'], self.true_param_vals['sp']
+        vax_odds = (self.num_vax_testPos - (1-sp)*nv)/(self.num_vax_testNeg - (1-se)*nv)
+        unvax_odds = (self.num_unvax_testPos - (1-sp)*nu)/(self.num_unvax_testNeg - (1-se)*nu)
+
+        # return vax_odds/unvax_odds
+        self.corrected_odds_ratio = vax_odds/unvax_odds
+
+    def posterior_samples_plot(self, param, ax):
+        nbins = 100
+        samples = self.mcmc_samples.to_dataframe()[('posterior', f'{param}')]
+        n, bins, patches = ax.hist(
+            samples,
+            bins=nbins,
+            density=True,
+            label='posterior samples',
+            # label=f'{param}'
+        )
+
+        tt = ax.axvline(
+            x=self.true_param_vals[param], 
+            color='k', 
+            linestyle='--',
+            label=f"true {param}={self.true_param_vals[param]:.3f}"
+        )
+        # return ax
+
+    # def credible_interval_df(self, prob=0.95):
+
+
+    def centered_ci_plot(self, param=None):
+        if param is None:
+            for param in self.true_param_vals.keys():
+                samples = self.mcmc_samples.to_dataframe()[('posterior', f'{param}')]
+                compute_centered_credible_interval(samples, val, 0.0005, prob)

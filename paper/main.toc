@@ -1,0 +1,24 @@
+\babel@toc {english}{}
+\contentsline {section}{\numberline {1}Outline}{2}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Motivation}{2}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Previous work}{2}{subsection.1.2}%
+\contentsline {section}{\numberline {2}Methods/Model}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Choice of priors}{4}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Interpretation of the $\beta $s}{4}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}$\beta _0$}{4}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2}$\beta _1$}{4}{subsubsection.2.2.2}%
+\contentsline {section}{\numberline {3}Results}{5}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Consistency}{5}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}If you run a TND and don't account for imperfect sensitivity and specificity you get the wrong VE}{5}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}If you know se and sp, we show how to get VE posterior in the logistic regression framework with covariates (Jackson and Endo)}{5}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}If you don’t know se and sp, we show how to get VE posterior and posteriors on se and sp and prevalence}{5}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}More important to nail down specificity}{5}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}Study design, sample size calculation given priors}{5}{subsection.3.6}%
+\contentsline {subsection}{\numberline {3.7}Importance of nailing down se and sp}{5}{subsection.3.7}%
+\contentsline {section}{\numberline {4}Ideas}{5}{section.4}%
+\contentsline {section}{\numberline {5}Quotes}{5}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Bayesian}{5}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Sensitivity and Specificity}{6}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Estimating... - Larremore, Fosdick (2021)}{6}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Bayesian... - Gelman, Carpenter (2020)}{6}{subsection.5.4}%
+\contentsline {section}{\numberline {6}Notation}{6}{section.6}%
