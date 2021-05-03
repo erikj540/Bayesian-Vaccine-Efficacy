@@ -16,16 +16,17 @@ if TEST==1: # testing
     N_0, N_1 = 50, 40
     n_burnin, n_samples, n_chains = 10, 100, 2
 else: # not testing
-    N_0, N_1 = 10000, 10000
-    n_burnin, n_samples, n_chains = 1000, 3000, 3
+    # N_0, N_1 = 10000, 10000
+    N_0, N_1 = 5000, 5000
+    n_burnin, n_samples, n_chains = 1000, 10000, 1
 
 prev = 0.5
 alpha = 0.5
 ve = 1-alpha
-se_0 = 0.50
-sp_0 = 0.90
-se_1 = 0.70
-sp_1 = 0.95
+se_0 = 0.99
+sp_0 = 0.99
+se_1 = 0.89
+sp_1 = 0.99
 beta0, beta1 = logit(prev), np.log(alpha)
 vax_prop = 0.5
 
@@ -50,7 +51,7 @@ params = {
 # generate data
 dataEngine = StudyData(vax_prop, beta0, beta1)
 ## test 0
-data_0 = dataEngine.create_one_test_data(N_0, se_0, sp_0, 0)
+data_0 = dataEngine.generate_one_test_data(N_0, se_0, sp_0, 0)
 stan_data_0 = {
     'N': data_0['N'],
     'x1': np.array(data_0['X']['vax']),
@@ -65,7 +66,7 @@ idata_0 = ar.from_pystan(fit)
 del(model)
 
 ## test 1
-data_1 = dataEngine.create_one_test_data(N_1, se_1, sp_1, 1)
+data_1 = dataEngine.generate_one_test_data(N_1, se_1, sp_1, 1)
 stan_data_1 = {
     'N': data_1['N'],
     'x1': np.array(data_1['X']['vax']),

@@ -27,7 +27,7 @@ ve = 1-alpha
 se = 0.70
 sp = 0.95
 vax_prop = 0.5
-n_spec, n_sens = 50, 50
+n_spec, n_sens = 2000, 2000
 
 params = {
     'N': N,
