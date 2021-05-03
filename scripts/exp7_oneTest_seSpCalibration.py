@@ -27,7 +27,7 @@ ve = 1-alpha
 se = 0.70
 sp = 0.95
 vax_prop = 0.5
-n_spec, n_sens = 2000, 2000
+n_spec, n_sens = 200, 200
 
 params = {
     'N': N,
@@ -41,7 +41,9 @@ params = {
     'vax_prop': vax_prop,
     'n_burnin': n_burnin,
     'n_samples': n_samples,
-    'n_chains': n_chains
+    'n_chains': n_chains,
+    'n_spec': n_spec,
+    'n_sens': n_sens,
 }
 
 dataEngine = StudyData(vax_prop, beta0, beta1)
@@ -58,8 +60,6 @@ stan_data = {
     'y_sens': y_sens,
     'n_sens': n_sens,
 }
-
-# print(y_spec, y_sens)
 
 fit = sample_from_model(model, stan_data, n_burnin, n_samples, n_chains)
 idata = ar.from_pystan(fit)
