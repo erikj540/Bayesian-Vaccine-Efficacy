@@ -23,10 +23,10 @@ else: # not testing
 prev = 0.5
 alpha = 0.5
 ve = 1-alpha
-se_0 = 0.99
-sp_0 = 0.99
-se_1 = 0.89
-sp_1 = 0.99
+se_0 = 0.70
+sp_0 = 0.95
+se_1 = 0.5
+sp_1 = 0.9
 beta0, beta1 = logit(prev), np.log(alpha)
 vax_prop = 0.5
 
