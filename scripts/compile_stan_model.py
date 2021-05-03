@@ -19,6 +19,9 @@ def get_command_line_arguments():
     return argument_dict
 
 def main(name):
+    """
+
+    """
     path2model = os.path.join(MODEL_DIR, f'{name}.stan')
     outpath = os.path.join(MODEL_DIR, f'{name}.pkl')
     # if os.path.exists(outpath):

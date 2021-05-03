@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pickle
 import pystan as ps
-from scipy.stats import bernoulli, uniform, norm, beta, gamma
+from scipy.stats import bernoulli, uniform, norm, beta, gamma, binom
 from scipy.special import expit
 import arviz as ar
 import sys
@@ -57,7 +57,10 @@ class StudyData:
         self.beta0 = beta0
         self.beta1 = beta1
 
-    def create_one_test_data(self, N, se, sp, test_id):
+    def generate_validation_data(self, n, prob):
+        return binom.rvs(n, prob)
+
+    def generate_one_test_data(self, N, se, sp, test_id):
         x1 = bernoulli.rvs(self.vax_prob, size=N) # vaccinated (1)/unvaccinated (0)
         X = pd.DataFrame({'vax': x1,})
         beta_vec = np.array([self.beta0, self.beta1])
@@ -350,12 +353,13 @@ class MCMCSamples:
         self.mcmc_samples = mcmc_samples
         self.true_param_vals = true_param_vals
 
+    def compute_test_result_summaries(self):
         tmp = self.data.groupby(['vax', 'test_result'])['test_result'].count()
         self.num_unvax_testNeg = tmp[0][0]
         self.num_unvax_testPos = tmp[0][1]
         self.num_vax_testNeg = tmp[1][0]
         self.num_vax_testPos = tmp[1][1]
-    
+        
     def compute_naive_odds_ratio(self):
         """
         Compute naive odds ratio which is (n_vp / n_vn) / (n_up / n_un)
