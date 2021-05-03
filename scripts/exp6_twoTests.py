@@ -6,8 +6,8 @@ import os
 from utilities.utilityFunctions import unpickle_object, pickle_object
 from BayesianVE.library import *
 
-NAME = 'flu_prev50_N10000'
-DATA_DIR = '/Users/erjo3868/Bayesian-Vaccine-Efficacy/data'
+NAME = 'fixed_twoTests'
+DATA_DIR = '/Users/erjo3868/Bayesian-Vaccine-Efficacy/4local'
 MODEL_DIR = '/Users/erjo3868/Bayesian-Vaccine-Efficacy/stan_models'
 TEST = 0 # 1=test, 0=not test
 
@@ -15,7 +15,6 @@ TEST = 0 # 1=test, 0=not test
 if TEST==1: # testing
     N_0, N_1 = 50, 40
     n_burnin, n_samples, n_chains = 10, 100, 2
-    n_burnin, n_samples, n_chains = 1000, 3000, 3
 else: # not testing
     N_0, N_1 = 10000, 10000
     n_burnin, n_samples, n_chains = 1000, 3000, 3
@@ -109,6 +108,8 @@ results = {
     'idata_1': idata_1,
     'idata_01': idata_01,
 }
+
+NAME = NAME+f'_N0{N_0}_N1{N_1}_prev{int(100*prev)}_alpha{int(100*alpha)}_se0{int(se_0*100)}_sp0{int(sp_0*100)}__se1{int(se_1*100)}_sp1{int(sp_1*100)}_vaxProp{int(vax_prop*100)}'
 
 pickle_object(os.path.join(DATA_DIR,f'{NAME}.pkl'), results)
 

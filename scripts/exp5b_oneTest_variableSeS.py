@@ -2,16 +2,15 @@ import pystan
 import arviz as ar
 from scipy.special import expit, logit
 import os
-
 from utilities.utilityFunctions import unpickle_object, pickle_object
 from BayesianVE.library import *
 
-NAME = 'fixed_oneTest'
+NAME = 'variable_oneTest'
 DATA_DIR = '/Users/erjo3868/Bayesian-Vaccine-Efficacy/4local'
 MODEL_DIR = '/Users/erjo3868/Bayesian-Vaccine-Efficacy/stan_models'
 TEST = 0 # 1=test, 0=not test
 
-model = unpickle_object(os.path.join(MODEL_DIR, 'one_test_fixed.pkl'))
+model = unpickle_object(os.path.join(MODEL_DIR, 'oneTest_variableSeSp.pkl'))
 
 # set parameters
 if TEST==1: # testing
@@ -23,10 +22,10 @@ else: # not testing
 
 prev = 0.5
 alpha = 0.5
-ve = 1-alpha
-se = 0.50
-sp = 0.90
 beta0, beta1 = logit(prev), np.log(alpha)
+ve = 1-alpha
+se = 0.70
+sp = 0.95
 vax_prop = 0.5
 
 params = {
@@ -47,13 +46,11 @@ params = {
 dataEngine = StudyData(vax_prop, beta0, beta1)
 
 # generate data
-data = dataEngine.create_one_test_data(N, se, sp, 0)
+data = dataEngine.generate_one_test_data(N, se, sp, 0)
 stan_data = {
     'N': data['N'],
     'x1': np.array(data['X']['vax']),
     'testResults': np.array(data['X']['test_result']),
-    'se': data['se'],
-    'sp': data['sp']
 }
 
 # fit model
@@ -71,5 +68,4 @@ results = {
 
 NAME = NAME+f'_N{N}_prev{int(100*prev)}_alpha{int(100*alpha)}_se{int(se*100)}_sp{int(sp*100)}_vaxProp{int(vax_prop*100)}'
 pickle_object(os.path.join(DATA_DIR,f'{NAME}.pkl'), results)
-
 

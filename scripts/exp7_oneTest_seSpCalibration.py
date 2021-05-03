@@ -2,11 +2,12 @@ import pystan
 import arviz as ar
 from scipy.special import expit, logit
 import os
+
 from utilities.utilityFunctions import unpickle_object, pickle_object
 from BayesianVE.library import *
 
 NAME = 'calibration'
-DATA_DIR = '/Users/erjo3868/Bayesian-Vaccine-Efficacy/data'
+DATA_DIR = '/Users/erjo3868/Bayesian-Vaccine-Efficacy/4local'
 MODEL_DIR = '/Users/erjo3868/Bayesian-Vaccine-Efficacy/stan_models'
 TEST = 0 # 1=test, 0=not test
 
@@ -21,12 +22,12 @@ else: # not testing
 
 prev = 0.5
 alpha = 0.5
+beta0, beta1 = logit(prev), np.log(alpha)
 ve = 1-alpha
 se = 0.70
-beta0, beta1 = logit(prev), np.log(alpha)
 sp = 0.95
 vax_prop = 0.5
-n_spec, n_sens = 300, 300
+n_spec, n_sens = 50, 50
 
 params = {
     'N': N,
@@ -70,5 +71,5 @@ results = {
     'stan_data': stan_data,
     'idata': idata,
 }
-
+NAME = NAME+f'_N{N}_prev{int(100*prev)}_alpha{int(100*alpha)}_se{int(se*100)}_sp{int(sp*100)}_nSpec{n_spec}_nSens{n_sens}_vaxProp{int(vax_prop*100)}'
 pickle_object(os.path.join(DATA_DIR,f'{NAME}.pkl'), results)
