@@ -4,27 +4,15 @@ data {
     int<lower=0> testResults[N];
     real<lower=0, upper=1> se;
     real<lower=0, upper=1> sp;
-    // real logit_se0_prior_mu;
-    // real<lower=0> logit_se0_prior_scale;
-    // real logit_sp0_prior_mu;
-    // real<lower=0> logit_sp0_prior_scale;
 }
-
 transformed data {}
-
 parameters {
     real beta0;
     real<lower=0> pos_beta1;
-    // real<lower=0,upper=1> logit_se0;
-    // real<lower=0,upper=1> logit_sp0; 
 }
-
 transformed parameters {
     real<upper=0> beta1 = -1*pos_beta1;
-    // real<lower=0, upper=1> se0 = inv_logit(logit_se0);
-    // real<lower=0, upper=1> sp0 = inv_logit(logit_sp0);
 }
-
 model {
     // Priors
     beta0 ~ normal(0,1);

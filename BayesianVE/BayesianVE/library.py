@@ -383,9 +383,11 @@ class MCMCSamples:
         # return vax_odds/unvax_odds
         self.corrected_odds_ratio = vax_odds/unvax_odds
 
-    def posterior_samples_plot(self, param, ax):
+    
+    def posterior_samples_plot(self, param, ax, smooth=0):
         nbins = 100
         samples = self.mcmc_samples.to_dataframe()[('posterior', f'{param}')]
+        n, bins = np.histogram(counts, bins=100, density=True)
         n, bins, patches = ax.hist(
             samples,
             bins=nbins,
@@ -393,7 +395,6 @@ class MCMCSamples:
             label='posterior samples',
             # label=f'{param}'
         )
-
         tt = ax.axvline(
             x=self.true_param_vals[param], 
             color='k', 
