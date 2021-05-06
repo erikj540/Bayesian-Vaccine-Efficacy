@@ -7,7 +7,7 @@ from utilities.utilityFunctions import unpickle_object, pickle_object
 from BayesianVE.library import *
 
 # NAME = 'point3'
-DATA_DIR = '/Users/erjo3868/Bayesian-Vaccine-Efficacy/4local'
+DATA_DIR = '/Users/erjo3868/Bayesian-Vaccine-Efficacy/4local/pt3'
 MODEL_DIR = '/Users/erjo3868/Bayesian-Vaccine-Efficacy/stan_models'
 MODEL_PATH = os.path.join(MODEL_DIR, 'one_test_fixed.pkl')
 TEST = 0 # 1=test, 0=not test
@@ -20,7 +20,7 @@ else: # not testing
 
 def fixed_se_sp(prev, alpha, se, sp, vax_prop, N, model_path, name):
     ve, beta0, beta1 = 1-alpha, logit(prev), np.log(alpha)
-    name = name + f'_N{N}_prev{int(100*prev)}_alpha{int(100*alpha)}_se{int(se*100)}_sp{int(sp*100)}_vaxProp{int(vax_prop*100)}'
+    # name = name + f'_N{N}_prev{int(100*prev)}_alpha{int(100*alpha)}_se{int(se*100)}_sp{int(sp*100)}_vaxProp{int(vax_prop*100)}'
 
     if os.path.exists(os.path.join(DATA_DIR,f'{name}.pkl')):
         print(f'File already exists! {name}')
@@ -103,23 +103,55 @@ def fixed_se_sp(prev, alpha, se, sp, vax_prop, N, model_path, name):
 #         args.vax_prop, args.N, MODEL_PATH, args.name
 #     )
 
+# n_sims = 2
 
-prevs = [0.1, 0.5, 0.9]
-alphas = [0.01, 0.5, 0.9]
-Ns = [5000]
-ses = [0.6, 0.8, 1]
-sps = [0.6, 0.8, 1]
-vax_props = [0.1, 0.5, 0.9]
-name = 'point3'
+# for ii in range(n_sims):
+#     prev = np.random.uniform(0.1, 0.9)
+#     alpha = np.random.uniform(0, 0.5)
+#     se = np.random.uniform(0.6, 1)
+#     sp = np.random.uniform(0.6, 1)
+#     vax_prob = 0.5
+#     N = 5000
 
-for prev in prevs:
-    for alpha in alphas:
-        for N in Ns:
-            for se in ses:
-                for sp in sps:
-                    for vax_prop in vax_props:
-                        fixed_se_sp(
-                            prev, alpha, se, sp,
-                            vax_prop, N, MODEL_PATH, name
-                        )
+#     name = f'pt3_{ii}'
+#     fixed_se_sp(
+#         prev, alpha, se, sp, 
+#         vax_prob, N, MODEL_PATH, name
+#     )
 
+# prevs = [0.1, 0.5, 0.9]
+# alphas = [0.01, 0.5, 0.9]
+# Ns = [5000]
+# ses = [0.6, 0.8, 1]
+# sps = [0.6, 0.8, 1]
+# vax_props = [0.1, 0.5, 0.9]
+
+# for prev in prevs:
+#     for alpha in alphas:
+#         for N in Ns:
+#             for se in ses:
+#                 for sp in sps:
+#                     for vax_prop in vax_props:
+#                         fixed_se_sp(
+#                             prev, alpha, se, sp,
+#                             vax_prop, N, MODEL_PATH, name
+#                         )
+
+
+if __name__=="__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--i', action='store', type=int, required=True)
+    args = parser.parse_args()
+
+    prev = np.random.uniform(0.1, 0.9)
+    alpha = np.random.uniform(0, 0.5)
+    se = np.random.uniform(0.6, 1)
+    sp = np.random.uniform(0.6, 1)
+    vax_prop = 0.5
+    N = 5000
+
+    name = f'pt3_{args.i}'
+    fixed_se_sp(
+        prev, alpha, se, sp, 
+        vax_prop, N, MODEL_PATH, name
+    )

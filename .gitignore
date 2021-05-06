@@ -143,5 +143,8 @@ notebooks/
 stan_models/*.pkl
 fiji_out/*
 4local/point5_avg/*
+4local/pt5/*
+4local/pt3/*
+4local/pt5_2/*
 
 *.DS_STORE

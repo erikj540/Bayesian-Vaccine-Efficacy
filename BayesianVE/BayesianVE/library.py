@@ -360,7 +360,7 @@ class MCMCSamples:
         self.num_vax_testNeg = tmp[1][0]
         self.num_vax_testPos = tmp[1][1]
         
-    def compute_naive_odds_ratio(self):
+    def compute_uncorrected_point_estimates(self):
         """
         Compute naive odds ratio which is (n_vp / n_vn) / (n_up / n_un)
         """
@@ -368,9 +368,10 @@ class MCMCSamples:
         unvax_odds = self.num_unvax_testPos/self.num_unvax_testNeg
 
         # return vax_odds/unvax_odds
-        self.naive_odds_ratio = vax_odds/unvax_odds
-    
-    def compute_corrected_odds_ratio(self):
+        self.uncorrected_odds_ratio = vax_odds/unvax_odds
+        self.uncorrected_ve_pt_estimate = 1 - self.uncorrected_odds_ratio
+
+    def compute_corrected_point_estimates(self):
         """
         Compute corrected odds ratio ala Endo et al. equation 3 and Marc's derivation.
         """
@@ -382,7 +383,7 @@ class MCMCSamples:
 
         # return vax_odds/unvax_odds
         self.corrected_odds_ratio = vax_odds/unvax_odds
-
+        self.corrected_ve_pt_estimate = 1 - self.corrected_odds_ratio
     
     def posterior_samples_plot(self, param, ax, smooth=0):
         nbins = 100

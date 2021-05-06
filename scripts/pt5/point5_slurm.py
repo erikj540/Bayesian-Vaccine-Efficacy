@@ -6,7 +6,7 @@ import os, argparse
 from utilities.utilityFunctions import unpickle_object, pickle_object
 from BayesianVE.library import *
 
-DATA_DIR = '/Users/erjo3868/Bayesian-Vaccine-Efficacy/4local/point5_avg'
+DATA_DIR = '/Users/erjo3868/Bayesian-Vaccine-Efficacy/4local/pt5_2'
 MODEL_DIR = '/Users/erjo3868/Bayesian-Vaccine-Efficacy/stan_models'
 MODEL_PATH = os.path.join(MODEL_DIR, 'calibration_study_one_test.pkl')
 TEST = 0 # 1=test, 0=not test
@@ -83,7 +83,7 @@ if __name__=="__main__":
 
     args = parser.parse_args()
 
-    name = 'point5'
+    name = 'pt5'
     
     for ii in range(args.n_sims):                            
         validation_ve_study(
