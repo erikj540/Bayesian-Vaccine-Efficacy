@@ -68,29 +68,26 @@ def validation_ve_study(prev, alpha, se, sp, vax_prop, N, n_sens, n_spec, model_
         }
         pickle_object(os.path.join(DATA_DIR,f'{name}.pkl'), results)
 
-prevs = [0.5]
-alphas = [0.5]
-Ns = [5000]
-ses = [0.7]
-sps = [0.9]
-vax_props = [0.5]
-num_validation_tests = 500
-sp_proportions = np.linspace(0.5, 1, 3)
-name = 'point5'
+if __name__=="__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--prev', action='store', type=float, required=True)
+    parser.add_argument('--alpha', action='store', type=float, required=True)
+    parser.add_argument('--se', action='store', type=float, required=True)
+    parser.add_argument('--sp', action='store', type=float, required=True)
+    parser.add_argument('--vax_prop', action='store', type=float, required=True)
+    parser.add_argument('--N', action='store', type=int, required=True)
+    parser.add_argument('--n_sens', action='store', type=int, required=True)
+    parser.add_argument('--n_spec', action='store', type=int, required=True)
+    parser.add_argument('--n_sims', action='store', type=int, required=True)
+    # parser.add_argument('--name', action='store', type=str, required=True)
 
-for prev in prevs:
-    for alpha in alphas:
-        for N in Ns:
-            for se in ses:
-                for sp in sps:
-                    for vax_prop in vax_props:
-                        for prop in sp_proportions:
-                            n_spec = int(prop*num_validation_tests)
-                            n_sens = num_validation_tests - n_spec
-                            # np.random.seed(23)
-                            for ii in range(2):                            
-                                validation_ve_study(
-                                    prev, alpha, se, sp, 
-                                    vax_prop, N, n_sens, n_spec, 
-                                    MODEL_PATH, name+f'_{ii}'
-                                )
+    args = parser.parse_args()
+
+    name = 'point5'
+    
+    for ii in range(args.n_sims):                            
+        validation_ve_study(
+            args.prev, args.alpha, args.se, args.sp, 
+            args.vax_prop, args.N, args.n_sens, args.n_spec, 
+            MODEL_PATH, name+f'_{ii}'
+        )

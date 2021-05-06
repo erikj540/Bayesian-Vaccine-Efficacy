@@ -141,5 +141,7 @@ notebooks/
 
 # ignore compiled STAN models
 stan_models/*.pkl
+fiji_out/*
+4local/point5_avg/*
 
 *.DS_STORE
