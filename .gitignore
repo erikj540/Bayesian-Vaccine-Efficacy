@@ -135,7 +135,7 @@ output/
 data/*
 
 # figures and jupyter notebooks
-figs/
+# figs/
 notebooks/
 *.ipynb
 
