@@ -7,8 +7,7 @@ import os, argparse, glob
 from utilities.utilityFunctions import unpickle_object, pickle_object
 from BayesianVE.library import *
 
-DATA_DIR = '/Users/erjo3868/Bayesian-Vaccine-Efficacy/4local/point5_avg'
-MODEL_DIR = '/Users/erjo3868/Bayesian-Vaccine-Efficacy/stan_models'
+DATA_DIR = '/Users/erjo3868/Bayesian-Vaccine-Efficacy/4local/pt5_2'
 
 files = glob.glob(os.path.join(DATA_DIR,'*.pkl'))
 df = []
@@ -30,9 +29,14 @@ for f in files:
 
 df = pd.DataFrame(
     df,
-    columns=['ve', 'n_spec', 'n_sens', 'prop_se', 'lower_hdi_bound', 'higher_hdi_bound']
+    columns=[
+        've', 
+        'n_spec', 
+        'n_sens', 
+        'prop_se', 
+        'lower_hdi_bound', 
+        'higher_hdi_bound'
+    ]
 )
 
-pickle_object('4local/point5_df.pkl', df)
-# print(df.head(2))
-# print(np.linspace(0,1,41))
+pickle_object('4local/pt5_2_df.pkl', df)
