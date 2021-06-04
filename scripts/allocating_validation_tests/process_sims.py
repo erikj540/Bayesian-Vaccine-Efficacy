@@ -29,6 +29,8 @@ for ii, f in enumerate(files):
 
     colms.append(f'{int(100*hdpi_prob)}_hdpi')
     vals.append(compute_hdi(pickled_dict['posterior'], 'beta1', hdpi_prob))
+
+    df.append(vals)
     # if ii>2: break
 # print(colms)
 # print(vals)
@@ -49,5 +51,7 @@ df = pd.DataFrame(
     df,
     columns=colms,
 )
+
+print(df.head(2))
 
 pickle_object(os.path.join(SAVE_DIR, 'df.pkl'), df)
