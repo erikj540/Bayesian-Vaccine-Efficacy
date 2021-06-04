@@ -15,8 +15,8 @@ transformed parameters {
 }
 model {
     // Priors
-    beta0 ~ normal(0,1);
-    pos_beta1 ~ gamma(2,1);
+    beta0 ~ normal(0, 1);
+    pos_beta1 ~ gamma(2, 1);
 
     // Likelihood
     for(i in 1:N) {

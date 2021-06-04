@@ -153,5 +153,7 @@ fiji_out/*
 4local/pt5_2/*
 4local/pt5_OLD/*
 
+results/allocating_validation_tests/sims
+results/tests
 
 *.DS_STORE

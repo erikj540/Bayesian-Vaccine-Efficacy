@@ -1,6 +1,30 @@
 # Bayesian-Vaccine-Efficacy
-## Create Stan model
 
+## Simulation
+The simulation framework takes a dictionary. The dictionary MUST have five required keys: 
+1. `model_name` which is name of pickled STAN model assumed to be in `MODEL_DIR`
+1. `n_burnin` which is number of burn in samples
+1. `n_samples` which is number of (approximate) posterior samples to draw
+1. `n_chains` which is number of Monte Carol chains to use
+1. `name`. In path `DATA_DIR/<name>.pkl`, saves a dictionary  dictionary containing the params (key=`params`), posterior samples (key=`idata`), the STAN code (key=`code`) (in particular, so one can verify the priors that were used), and the `SimulationData` data (key=`data`).
+
+The dictionary MUST have additional keys and for those keys there are two options. **Option 1** is to pass a `SimulationData` object via key `data` if, for instance, you  are using the same data for many simulations. **Option 2** is to pass several keys that are used generate a `SimulationData` object. The keys are `N`, `vax_prob`, `beta0` (`beta0 = logit(prev)`), `beta1` (`beta1=log(alpha)`), `se`, and `sp`.
+
+The simulation framework can be called from the command line via
+```
+# option 1
+python scripts/test.py -model_name= -n_burnin= -n_samples= -n_chains= -name= -data=
+
+# option 2
+python scipts/test.py -model_name= -n_burnin= -n_samples= -n_chains= -name= -N= -prev= -alpha= -se= -sp= -vax_prob=
+```
+
+# STAN models
+- `one_test_fixed`: fixed se and sp. The input data has `N`, `x1` (=vaccination status), `testResults`, `se`, and `sp`. 
+- `calibration_study_one_test`: is for a calibration study. The input data has `N`, `x1`, `testResults`, `y_spec`, `n_spec`, `y_sens`, `n_sens`. 
+
+
+## Create Stan model
 ### Option 1
 The possible Stan priors include `normal(mu,sd)`, `gamma(a,b)`, `beta(a,b)`, `fixed(val)`, etc. The following command compiles a Stan model with the supplied posteriors and path2save.
 

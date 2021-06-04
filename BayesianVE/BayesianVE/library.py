@@ -7,6 +7,7 @@ from scipy.special import expit
 import arviz as ar
 import sys
 from utilities.plotUtils import *
+from utilities.utilityFunctions import unpickle_object
 
 def create_model_code(priors):
     """
@@ -22,7 +23,7 @@ def create_model_code(priors):
             sp = float(priors['sp'].split('(')[1].split(')')[0])
             parameters_block = 'parameters {{\nreal beta0;\nreal<lower=0> beta1_pos;\n}}\n'
             model_block = 'model {{\nbeta0 ~ {0};\nbeta1_pos ~ {1};\nfor(i in 1:N) {{\nreal p;\nreal se;\nreal sp;\nse = {2};\nsp = {3};\np = inv_logit(beta0 + beta1*x1[i]);\ny[i] ~ bernoulli(se*p + (1-sp)*(1-p));\n}}\n}}\n'.format(priors['beta0'], priors['beta1'], se, sp)
-        else: # se_prior=='fixed*' & sp_prior!='fixed*' 
+        else: # se_prior=='fixed*' & sp_rior!='fixed*'
             parameters_block = 'parameters {{\nreal beta0;\nreal<lower=0> beta1_pos;\nreal<lower=0,upper=1> sp;\n}}\n'
             model_block = 'model {{\nbeta0 ~ {0};\nbeta1_pos ~ {1};\nsp ~ {2};\nfor(i in 1:N) {{\nreal p;\nreal se;\nse = {3};\np = inv_logit(beta0 + beta1*x1[i]);\ny[i] ~ bernoulli(se*p + (1-sp)*(1-p));\n}}\n}}\n'.format(priors['beta0'], priors['beta1'], priors['sp'], se)
     else: 
@@ -50,6 +51,70 @@ def save_stan_model(model, save_path):
 def sample_from_model(model, data, n_burnin, n_samples, n_chains):
     fit = model.sampling(data=data, iter=n_samples+n_burnin, chains=n_chains, warmup=n_burnin)
     return fit
+
+# def sample_from_model(compiled_model_path, n_burnin, n_samples, n_chains):
+#     # unpickle compiled model
+#     model = unpickle_object(compiled_model_path)
+#     code = model.model_code
+#     # sample from model
+#     fit = sample_from_model(model, stan_data, n_burnin, n_samples, n_chains)
+#     idata = ar.from_pystan(fit)
+
+#     del(model) # delete model
+
+#     return {
+#         'fit': idata,
+#         'code': code,
+#     }
+
+class SimulatedData:
+    def __init__(self, N, vax_prob, beta0, beta1, se, sp):
+        self.N = N
+        self.vax_prob = vax_prob
+        self.beta0 = beta0
+        self.beta1 = beta1 
+        self.se = se
+        self.sp = sp
+
+    def generate_ve_study_data(self):
+        x1 = bernoulli.rvs(self.vax_prob, size=self.N) # vaccinated (1)/unvaccinated (0)
+        X = pd.DataFrame({'vax': x1,})
+        beta_vec = np.array([self.beta0, self.beta1])
+        X['prob_td'] = X.apply(lambda row: expit(np.dot(np.array([1, row['vax']]), beta_vec)), axis=1)
+        # X['test_id'] = test_id
+        X['test_result'] = -1
+        X['test_result'] = X['prob_td'].apply(lambda p: bernoulli.rvs(self.se*p + (1-self.sp)*(1-p)))
+
+        self.study_data = X
+
+    def generate_test_validation_data(self, n, prob):
+        return binom.rvs(n, prob)
+
+    def create_stan_data_se_sp_validation_one_dx_test(self, n_sens, n_spec):
+        VALIDATION_ONE_DX_TEST_NEEDED_PARAMS = ['N', 'x1', 'testResults', 'y_spec', 'n_spec', 'y_sens', 'n_sens']
+        self.n_sens = n_sens
+        self.n_spec = n_spec
+        self.y_sens = self.generate_test_validation_data(self.n_sens, self.se)
+        self.y_spec = self.generate_test_validation_data(self.n_spec, self.sp)
+
+        self.stan_data = {
+            'N': self.N,
+            'x1': np.array(self.study_data['vax']),
+            'testResults': np.array(self.study_data['test_result']),
+            'y_spec': self.y_spec,
+            'n_spec': self.n_spec,
+            'y_sens': self.y_sens,
+            'n_sens': self.n_sens,
+        }
+
+    def create_stan_data_se_sp_fixed_one_dx_test(self, se, sp):
+        self.stan_data = {
+            'N': self.N,
+            'x1': np.array(self.study_data['vax']),
+            'testResults': np.array(self.study_data['test_result']),
+            'se': se,
+            'sp': sp,
+        }
 
 class StudyData:
     def __init__(self, vax_prob, beta0, beta1):
@@ -412,3 +477,25 @@ class MCMCSamples:
             for param in self.true_param_vals.keys():
                 samples = self.mcmc_samples.to_dataframe()[('posterior', f'{param}')]
                 compute_centered_credible_interval(samples, val, 0.0005, prob)
+
+
+def generate_study_data(beta0, beta1, vax_prob, N, se, sp, test_id):
+        x1 = bernoulli.rvs(vax_prob, size=N) # vaccinated (1)/unvaccinated (0)
+        X = pd.DataFrame({'vax': x1,})
+        beta_vec = np.array([beta0, beta1])
+        X['prob_td'] = X.apply(lambda row: expit(np.dot(np.array([1, row['vax']]), beta_vec)), axis=1)
+        X['test_id'] = test_id
+        X['test_result'] = -1
+        X['test_result'] = X['prob_td'].apply(lambda p: bernoulli.rvs(se*p + (1-sp)*(1-p)))
+
+        data = {
+            'beta0': beta0,
+            'beta1': beta1,
+            'vax_prob': vax_prob,
+            'N': N, 
+            'se': se,
+            'sp': sp, 
+            'X': X
+        }
+
+        return data

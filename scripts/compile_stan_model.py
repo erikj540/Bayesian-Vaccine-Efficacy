@@ -1,22 +1,8 @@
 import pickle
 import pystan as ps
-import os
-import sys
+import os, argparse, sys
 
 MODEL_DIR = '/Users/erjo3868/Bayesian-Vaccine-Efficacy/stan_models'
-
-def get_command_line_arguments():
-    """
-    Get command line arguments.
-    """
-    args = sys.argv
-    args = args[1:]
-    argument_dict = {}
-    for arg in args:
-        name = arg.split('=')[0][2:]
-        val = arg.split('=')[1]
-        argument_dict[name] = val
-    return argument_dict
 
 def main(name):
     """
@@ -36,12 +22,8 @@ def main(name):
         )
 
 if __name__=="__main__":
-    needed_params = [
-        'name'
-    ]
-    params = get_command_line_arguments()
-    for param in needed_params:
-        assert param in params, '{} not in params and is required'.format(param)
-    print(f'params = {params}')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--name', action='store', type=str, required=True)
+    args = parser.parse_args()
 
-    main(params['name'])
+    main(args.name)
