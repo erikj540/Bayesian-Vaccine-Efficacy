@@ -1,5 +1,11 @@
 # Bayesian-Vaccine-Efficacy
 
+## Notes for self
+- "point 4" is one diagnostic test with a validation study. where we vary N_{neg} = N_{pos}
+- "point 3" is the consistency plot with corrected and uncorrected HDPIs and point estimates
+- "point 5" is changing the proportion of validation tests that go to specificity
+- 
+
 ## Simulation
 The simulation framework takes a dictionary. The dictionary MUST have five required keys: 
 1. `model_name` which is name of pickled STAN model assumed to be in `MODEL_DIR`

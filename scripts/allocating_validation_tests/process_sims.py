@@ -13,45 +13,41 @@ hdpi_prob = 0.95
 
 files = glob.glob(os.path.join(DATA_DIR,'*.pkl'))
 
+
 df = []
 for ii, f in enumerate(files):
-    pickled_dict = unpickle_object(f)
-    colms, vals = [], []
-    for key, val in pickled_dict['params'].items():
-        colms.append(key)
-        vals.append(val)
-    colms.append(key)
-    vals.append(pickled_dict['code'])
+    print(f'iter = {ii}')
+    if f.find('iter')!=-1:
+        pickled_dict = unpickle_object(f)
+        colms, vals = [], []
+        for key, val in pickled_dict['params'].items():
+            colms.append(key)
+            vals.append(val)
+        colms.append('code')
+        vals.append(pickled_dict['code'])
 
-    # colms.append('posterior_samples')
-    # vals.append(pickled_dict['posterior'])
+        # colms.append('posterior_samples')
+        # vals.append(pickled_dict['posterior'])
 
 
-    colms.append(f'{int(100*hdpi_prob)}_hdpi')
-    vals.append(compute_hdi(pickled_dict['posterior'], 'beta1', hdpi_prob))
-
-    df.append(vals)
-    # if ii>2: break
-# print(colms)
-# print(vals)
-#     interval, prob = compute_hdi(res['idata'], 'beta1')
-#     interval = [1-np.exp(val) for val in interval] # turn odds-ratio into VE
-#     interval.sort()
-#     df.append([
-#         res['params']['ve'],
-#         res['params']['n_spec'],
-#         res['params']['n_sens'],
-#         res['params']['n_spec']/(res['params']['n_spec']+res['params']['n_sens']),
-#         interval[0],
-#         interval[1],
-#     ])
-#     # break
+        # colms.append(f'{int(100*hdpi_prob)}_hdpi')
+        interval, prob = compute_hdi(pickled_dict['posterior'], 'beta1', hdpi_prob)
+        interval = [1-np.exp(val) for val in interval] # turn odds-ratio into VE
+        interval.sort()
+        
+        colms.append(f'{int(100*hdpi_prob)}_hdpi_lower')
+        vals.append(interval[0])
+        colms.append(f'{int(100*hdpi_prob)}_hdpi_upper')
+        vals.append(interval[1])
+        colms.append(f'{int(100*hdpi_prob)}_hdpi_prob')
+        vals.append(prob)
+        df.append(vals)
 
 df = pd.DataFrame(
     df,
     columns=colms,
 )
 
-print(df.head(2))
+# print(df.head(2))
 
-pickle_object(os.path.join(SAVE_DIR, 'df.pkl'), df)
+pickle_object(os.path.join(SAVE_DIR, 'df_averaged.pkl'), df)
