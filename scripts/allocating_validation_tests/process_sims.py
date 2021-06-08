@@ -11,13 +11,13 @@ DATA_DIR = '/Users/erjo3868/Bayesian-Vaccine-Efficacy/results/allocating_validat
 SAVE_DIR = '/Users/erjo3868/Bayesian-Vaccine-Efficacy/results/allocating_validation_tests'
 hdpi_prob = 0.95
 
-files = glob.glob(os.path.join(DATA_DIR,'*.pkl'))
-
+files = glob.glob(os.path.join(DATA_DIR,'*date*.pkl'))
+print(f'Number of files = {len(files)}')
 
 df = []
 for ii, f in enumerate(files):
-    print(f'iter = {ii}')
-    if f.find('iter')!=-1:
+    # print(f'iter = {ii}')
+    if f.find('date')!=-1:
         pickled_dict = unpickle_object(f)
         colms, vals = [], []
         for key, val in pickled_dict['params'].items():
@@ -50,4 +50,4 @@ df = pd.DataFrame(
 
 # print(df.head(2))
 
-pickle_object(os.path.join(SAVE_DIR, 'df_averaged.pkl'), df)
+pickle_object(os.path.join(SAVE_DIR, 'df_just_change_prev.pkl'), df)

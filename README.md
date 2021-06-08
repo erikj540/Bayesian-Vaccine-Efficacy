@@ -19,10 +19,10 @@ The dictionary MUST have additional keys and for those keys there are two option
 The simulation framework can be called from the command line via
 ```
 # option 1
-python scripts/test.py -model_name= -n_burnin= -n_samples= -n_chains= -name= -data=
+python scripts/simulation.py -model_name= -n_burnin= -n_samples= -n_chains= -name= -data=
 
 # option 2
-python scipts/test.py -model_name= -n_burnin= -n_samples= -n_chains= -name= -N= -prev= -alpha= -se= -sp= -vax_prob=
+python scipts/simulation.py -model_name= -n_burnin= -n_samples= -n_chains= -name= -N= -prev= -alpha= -se= -sp= -vax_prob=
 ```
 
 # STAN models
